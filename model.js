@@ -9,7 +9,7 @@ const gold=mat('#b99755',.82,.25);gold.clearcoat=.8;gold.clearcoatRoughness=.17;
 const satin=mat('#252a28',.78,.39),metal=mat('#909794',.95,.25),dark=mat('#090d0b',.0,.72),rubber=mat('#191c1b',.02,.82),red=mat('#a93220',.5,.33),ivory=mat('#deded0',.3,.37);
 function canvasTexture(w,h,draw){const c=document.createElement('canvas');c.width=w;c.height=h;draw(c.getContext('2d'));const t=new T.CanvasTexture(c);t.colorSpace=T.SRGBColorSpace;t.anisotropy=8;return t}
 const weave=canvasTexture(256,256,c=>{c.fillStyle='#343936';c.fillRect(0,0,256,256);for(let y=0;y<64;y++)for(let x=0;x<64;x++){const bright=((x+y)%4<2);c.fillStyle=bright?'#535a55':'#272d2a';c.fillRect(x*4,y*4,bright?3:4,bright?4:3)}});weave.wrapS=weave.wrapT=T.RepeatWrapping;weave.repeat.set(10,6);const carbon=mat('#444b4c',.48,.42);carbon.map=weave;carbon.clearcoat=.45;carbon.clearcoatRoughness=.3;
-const cross=canvasTexture(256,256,c=>{c.fillStyle='#a8adb1';c.fillRect(0,0,256,256);for(const sign of [-1,1])for(let i=-512;i<640;i+=64){c.strokeStyle=sign>0?'#e3e5e6':'#bfc4c8';c.lineWidth=9;c.beginPath();c.moveTo(i,0);c.lineTo(i+sign*256,256);c.stroke()}});cross.wrapS=cross.wrapT=T.RepeatWrapping;cross.repeat.set(3,2);paint.color.set('#252b31');paint.map=cross;gold.map=cross;
+const cross=canvasTexture(256,256,c=>{c.fillStyle='#a8adb1';c.fillRect(0,0,256,256);for(const sign of [-1,1])for(let i=-512;i<640;i+=64){c.strokeStyle=sign>0?'#e3e5e6':'#bfc4c8';c.lineWidth=9;c.beginPath();c.moveTo(i,0);c.lineTo(i+sign*256,256);c.stroke()}});cross.wrapS=cross.wrapT=T.RepeatWrapping;cross.repeat.set(3,2);paint.color.set('#252b31');paint.map=cross;
 let seed=127;const rand=()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296};const noise=canvasTexture(256,256,c=>{c.fillStyle='#888';c.fillRect(0,0,256,256);for(let i=0;i<18000;i++){let v=100+Math.floor(rand()*70);c.fillStyle=`rgb(${v},${v},${v})`;c.fillRect(rand()*256,rand()*256,1,1)}});noise.colorSpace=T.NoColorSpace;noise.wrapS=noise.wrapT=T.RepeatWrapping;noise.repeat.set(6,3);rubber.bumpMap=noise;rubber.bumpScale=.0008;rubber.roughnessMap=noise;
 for(const id of ['front','nose','tyres','suspension','halo','cockpit','sidepods','airbox','engine','floor','diffuser','rear']){let g=new T.Group();g.userData.id=id;groups[id]=g;car.add(g)}
 function mesh(id,geo,material,pos=[0,0,0],rotation){const m=new T.Mesh(geo,material);m.position.set(...pos);if(rotation)m.rotation.set(...rotation);m.castShadow=m.receiveShadow=true;m.userData.part=id;groups[id].add(m);pickables.push(m);return m}
@@ -46,13 +46,13 @@ const nose=loft('nose',noseSections,paint,0,.78);
 const goldNose=loft('nose',[[-2.615,.243,.077,.025],[-2.595,.247,.124,.043],[-2.54,.271,.140,.065],[-2.30,.33,.145,.09],[-1.97,.395,.145,.112]],gold,0,.78);
 // Shared shell from cockpit to tail. One vertex/normal field crosses the ownership seam.
 // x, cockpit opening half-width, ridge height, shoulder height, outer width, floor height.
-const bodySections=[[-.75,.005,.655,.646,.28,.117],[-.57,.08,.69,.680,.317,.117],[-.32,.194,.719,.710,.354,.117],[.06,.219,.738,.729,.367,.117],[.35,.196,.79,.775,.349,.117],[.52,.125,.800,.765,.308,.117],[.66,0,.936,.714,.286,.117],[.84,0,.906,.655,.257,.117],[1.10,0,.801,.552,.211,.117],[1.37,0,.647,.441,.157,.117],[1.62,0,.485,.338,.110,.117],[1.84,0,.395,.298,.068,.155],[2.02,0,.333,.289,.028,.234]];
+const bodySections=[[-1.10,.001,.644,.632,.220,.117],[-.91,.003,.654,.643,.265,.117],[-.75,.005,.668,.655,.28,.117],[-.57,.08,.69,.680,.317,.117],[-.32,.194,.719,.710,.354,.117],[.06,.219,.738,.729,.367,.117],[.35,.196,.79,.775,.349,.117],[.52,.125,.800,.765,.308,.117],[.66,0,.936,.714,.286,.117],[.84,0,.906,.655,.257,.117],[1.10,0,.801,.552,.211,.117],[1.37,0,.647,.441,.157,.117],[1.62,0,.485,.338,.110,.117],[1.84,0,.395,.298,.068,.155],[2.02,0,.333,.289,.028,.234]];
 const bodyFront=[],bodyRear=[];
 for(let side of [-1,1]){const N=72,L=bodySections.length*12,verts=[],indices=[],uv=[];let splitRow=0;for(let i=0;i<=L;i++){const[x,inner,top,shoulder,width,bottom]=interp(bodySections,i/L);if(x<=.52)splitRow=i;const z0=Math.max(0,inner),rim=z0>0.002;const points=[[z0,top-.012],[z0+(width-z0)*.26,top],[z0+(width-z0)*.65,shoulder],[width,shoulder-.065],[width*.99,bottom+(shoulder-bottom)*.30],[width-.018,bottom+.046],[width+.016,bottom+.002],[z0,bottom-.002],[z0,top-(rim?.15:.10)]];
 const curve=new T.CatmullRomCurve3(points.map(([z,y])=>new T.Vector3(x,y,side*z)),true,'centripetal');for(let j=0;j<=N;j++){let v=curve.getPoint(j/N);verts.push(v.x,v.y,v.z);uv.push(i/L,j/N)}}for(let i=0;i<L;i++)for(let j=0;j<N;j++){let a=i*(N+1)+j,b=a+1,c=a+N+1,d=c+1;if(side>0)indices.push(a,b,c,b,d,c);else indices.push(a,c,b,b,c,d)}const full=geo(verts,indices,uv),boundary=splitRow*N*6;for(let rear of [false,true]){const geometry=full.clone();geometry.setIndex(indices.slice(rear?boundary:0,rear?undefined:boundary));const m=mesh(rear?'engine':'nose',geometry,paint);m.name=rear?'continuous-engine-shell':'continuous-chassis-shell';m.userData.bodySeam={row:splitRow,stride:N+1,side};(rear?bodyRear:bodyFront).push(m)}full.dispose();
 tube('nose',[[-.56,.682,side*.10],[-.31,.719,side*.201],[.04,.741,side*.222],[.33,.791,side*.202],[.52,.825,side*.13]],.0025,satin)}
 // A curved central keel descends from the raised nose into the floor leading edge.
-for(let side of [-1,1]){const keel=skin('nose',[[-1.31,.47,.324,.185],[-1.15,.51,.237,.218],[-1.02,.55,.142,.242],[-.88,.59,.116,.268],[-.70,.62,.116,.281]],paint,side,([x,top,bottom,width])=>[[0,top],[width*.7,top-.025],[width,top-.07],[width*.98,bottom+.065],[width*.88,bottom+.010],[0,bottom]]);keel.name='nose-floor-keel';}
+for(let side of [-1,1]){const keel=skin('nose',[[-1.31,.43,.324,.167],[-1.15,.46,.237,.185],[-1.02,.48,.142,.205],[-.88,.49,.116,.225],[-.70,.49,.116,.245]],paint,side,([x,top,bottom,width])=>[[0,top],[width*.7,top-.025],[width,top-.07],[width*.98,bottom+.065],[width*.88,bottom+.010],[0,bottom]]);keel.name='nose-floor-keel';}
 // Subtle diagonal lacquer motif and nose sponsors, projected onto the curved shell.
 const motif=canvasTexture(1024,1024,c=>{c.fillStyle='#53606c';c.globalAlpha=.38;for(let x=-1100;x<1800;x+=330){c.beginPath();c.moveTo(x,0);c.lineTo(x+100,0);c.lineTo(x+410,512);c.lineTo(x+100,1024);c.lineTo(x,1024);c.lineTo(x+285,512);c.closePath();c.fill()}});
 const pattern=new T.Mesh(new DecalGeometry(nose,new T.Vector3(-1.2,.61,0),new T.Euler(-Math.PI/2,0,0),new T.Vector3(1.25,.52,.14)),new T.MeshPhysicalMaterial({map:motif,transparent:true,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-1,roughness:.3,metalness:.5}));pattern.userData.part='nose';groups.nose.add(pattern);pickables.push(pattern);
@@ -68,7 +68,7 @@ const flag=canvasTexture(512,256,c=>{c.fillStyle='#15243a';c.fillRect(0,0,512,25
 projectDecal(nose,flag,[-1.54,.608,0],[.16,.062,.10],[-Math.PI/2,0,-Math.PI/2]);
 // Three-element 2026-style front wing. The two rear elements articulate together.
 const frontMain=wing('front',-2.75,.155,1.86,.34,carbon,.14,.035);
-for(let side of [-1,1])decal(frontMain,'Expensify',[-2.53,.225,side*.56],[.5,.12,.10],[-Math.PI/2,0,-Math.PI/2],'#f4f3eb');
+for(let side of [-1,1])decal(frontMain,'Expensify',[-2.53,.270,side*.56],[.44,.105,.32],[-Math.PI/2,0,-Math.PI/2],'#f4f3eb');
 for(let k=0;k<2;k++){let x=-2.54+k*.16,y=.207+k*.055;let f=wing('front',x,y,1.79-k*.06,.235,k===0?paint:carbon,.15,.032);addFlap(f,[x,y,0],-.27)}
 for(let s of [-1,1]){let end=sheet('front',[[-2.61,.15],[-2.46,.17],[-2.22,.25],[-2.04,.42],[-2.16,.39],[-2.45,.28],[-2.65,.26]],.015,paint);end.position.z=s*.93;wing('front',-2.64,.12,.23,.46,carbon,.02,0).position.z=s*.825;tube('front',[[-2.64,.274,s*.93],[-2.46,.29,s*.93],[-2.19,.413,s*.93]],.004,gold);for(let z of [.31,.60])rod('front',[-2.64,.2,z*s],[-2.20,.35,z*s],.0045,metal);decal(end,'IWC',[-2.39,.255,s*.946],[.27,.085,.055],[0,s===1?0:Math.PI,0],'#f2f0e7');}
 // High, open sidepod mouths above pronounced undercuts and long descending flanks.
@@ -101,15 +101,13 @@ const gv=[],gi=[],gu=[],GL=84,GC=24;for(let i=0;i<=GL;i++){const[x,height,inner,
 const fin=sheet('engine',[[.60,1.036],[.78,.992],[.99,.879],[1.24,.721],[1.49,.552],[1.72,.408],[1.80,.355],[1.57,.32],[1.20,.48],[.87,.74]],.008,paint);
 tube('engine',[[.61,1.039,0],[.78,.995,0],[.99,.882,0],[1.24,.724,0],[1.49,.555,0],[1.72,.411,0]],.003,gold);
 for(let i=0;i<2;i++){const side=i===0?-1:1,cover=bodyRear[i];surfaceText(cover,'SharkNINJA',.91,.663,.46,.082,side);surfaceText(cover,'AMG',1.0,.550,.26,.065,side);}
-const rearGold=canvasTexture(1024,512,c=>{c.fillStyle='#b99755';c.beginPath();c.moveTo(0,0);c.lineTo(1024,0);c.lineTo(1024,512);c.lineTo(350,512);c.lineTo(350,140);c.lineTo(0,140);c.closePath();c.fill()});
-for(const cover of bodyRear)projectDecal(cover,rearGold,[1.58,.51,0],[.36,.42,.31],[-Math.PI/2,0,-Math.PI/2]);
 // Rounded trapezoid inlet, thin gold leading edge and recessed duct. No closed bulb.
 const airOutline=[[-.104,.946],[-.122,.953],[-.122,1.017],[-.111,1.10],[-.079,1.137],[-.04,1.146],[.04,1.146],[.079,1.137],[.111,1.10],[.122,1.017],[.122,.953],[.104,.946]];
-intake('airbox',airOutline,.349,.632,.012,gold);
-const intakeFairing=loft('airbox',[[.405,1.046,.126,.098],[.57,1.025,.126,.098],[.78,.987,.115,.084],[.98,.906,.083,.062],[1.12,.792,.047,.041],[1.26,.705,.020,.025]],paint,0,.72);
+intake('airbox',airOutline,.349,.405,.012,gold);
+const intakeFairing=loft('airbox',[[.405,1.046,.126,.098],[.57,1.025,.126,.098],[.78,.987,.115,.084],[.98,.906,.083,.062],[1.12,.792,.047,.041],[1.26,.705,.020,.025]],gold,0,.72);
 
 // Mask only the cavity's back: the forward section remains genuinely open.
-const innerOutline=airOutline.map(([z,y])=>[z*.89,1.047+(y-1.047)*.87]);intake('airbox',innerOutline,.344,.426,.004,carbon);
+const innerOutline=airOutline.map(([z,y])=>[z*.89,1.047+(y-1.047)*.87]);intake('airbox',innerOutline,.358,.399,.004,carbon);
 rod('airbox',[.341,.964,0],[.341,1.138,0],.005,carbon);
 loft('airbox',[[.29,.847,.055,.015],[.40,.891,.092,.075],[.54,.937,.112,.078]],paint,0,.75);
 box('airbox',.094,.026,.25,paint,[.499,1.224,0]);box('airbox',.034,.017,.026,dark,[.449,1.225,0]);rod('airbox',[.5,1.135,0],[.5,1.21,0],.009,carbon);
@@ -123,8 +121,9 @@ mesh('nose',new T.TorusGeometry(.028,.003,8,40),satin,[.47,.687,.316],[0,.12,0])
 const seat=loft('cockpit',[[-.45,.37,.12,.025],[-.05,.38,.18,.045],[.27,.53,.19,.17],[.4,.60,.18,.23]],dark,0,.6);
 for(let s of [-1,1]){tube('cockpit',[[.32,.70,s*.07],[.17,.51,s*.09],[-.07,.42,s*.12]],.017,red);rod('cockpit',[-.1,.4,s*.08],[.12,.46,s*.07],.009,metal)}
 const wheel=sheet('cockpit',[[-.12,-.03],[-.135,.025],[-.10,.075],[-.065,.08],[-.06,.045],[.06,.045],[.065,.08],[.10,.075],[.135,.025],[.12,-.03],[.063,-.057],[-.063,-.057]],.018,carbon);wheel.rotation.y=Math.PI/2;wheel.rotation.z=-.25;wheel.position.set(-.31,.66,0);
-const screenMat=mat('#5e9d8e',.1,.3);box('cockpit',.017,.041,.073,screenMat,[-.322,.695,0]);for(let s of [-1,1])for(let i=0;i<4;i++)mesh('cockpit',new T.SphereGeometry(.008,10,10),i===0?red:i===1?gold:ivory,[-.328,.649+i*.017,s*.095]);
-for(let i=0;i<5;i++)mesh('cockpit',new T.SphereGeometry(.003,6,6),gold,[-.326,.724,-.02+i*.01]);
+rod('cockpit',[-.31,.66,0],[-.60,.565,0],.016,metal);
+loft('cockpit',[[-.64,.548,.060,.050],[-.55,.578,.045,.036]],dark);
+for(const side of [-1,1]){tube('halo',[[.39,.813,side*.29],[.43,.777,side*.286],[.48,.734,side*.267]],.028,paint);loft('halo',[[.41,.766,.037,.030,side*.282],[.50,.728,.048,.035,side*.255]],paint);}
 // Flatter 2026 floor: no 2022-style Venturi tunnels or rear beam wing.
 // The front edge returns around two open notches; no hidden solid plate fills them.
 const edge=[[-1.04,.708],[-.74,.735],[.2,.735],[.98,.64],[1.48,.545],[1.67,.400],[1.81,.238],[1.90,.090],[1.922,.035]];
@@ -148,14 +147,14 @@ for(let face of [-1,1]){let fz=z+face*w*.51;let ring=mesh('tyres',new T.RingGeom
 mesh('tyres',new T.TorusGeometry(.227,.007,10,96),metal,[x,yc,fz]);mesh('tyres',new T.TorusGeometry(.217,.008,8,96),satin,[x,yc,fz-face*.022]);mesh('tyres',new T.CylinderGeometry(.052,.055,.032,12),satin,[x,yc,fz-face*.06],[Math.PI/2,0,0]);
 for(let i=0;i<10;i++){let a=i/10*Math.PI*2;for(let offset of [-.017,.017]){let a2=a+offset;rod('tyres',[x+Math.cos(a2)*.05,yc+Math.sin(a2)*.05,fz-face*.07],[x+Math.cos(a2+.08)*.22,yc+Math.sin(a2+.08)*.22,fz-face*.024],.007,satin)}mesh('tyres',new T.SphereGeometry(.004,6,6),metal,[x+Math.cos(a)*.188,yc+Math.sin(a)*.188,fz-face*.016])}
 mesh('tyres',new T.TorusGeometry(.14,.025,8,64),carbon,[x,yc,fz-face*.094]);}
-let inner=z-s*w*.35;mesh('suspension',new T.CylinderGeometry(.14,.14,.035,60),satin,[x,yc,inner],[Math.PI/2,0,0]);box('suspension',.07,.16,.045,metal,[x-.11,yc,inner-s*.03]);
+let inner=z-s*w*.35;rod('suspension',[x,.23,inner],[x,.48,inner],.030,satin);mesh('suspension',new T.CylinderGeometry(.14,.14,.035,60),satin,[x,yc,inner],[Math.PI/2,0,0]);box('suspension',.07,.16,.045,metal,[x-.11,yc,inner-s*.03]);
 for(let i=0;i<18;i++){let a=i/18*Math.PI*2;mesh('suspension',new T.SphereGeometry(.006,6,6),dark,[x+Math.cos(a)*.11,yc+Math.sin(a)*.11,inner+s*.020])}
 // Streamlined suspension blades with a rounded leading edge and thin trailing edge.
 function blade(a,b,chord){const vs=[],ix=[],uv=[];for(let i=0;i<=12;i++){const t=i/12;for(let j=0;j<=24;j++){const th=j*Math.PI/12,f=(1-Math.cos(th))*.5;vs.push(T.MathUtils.lerp(a[0],b[0],t)+(f-.32)*chord*(.76+.24*Math.sin(Math.PI*t)),T.MathUtils.lerp(a[1],b[1],t)+.011*Math.sin(th)*(1-.52*f),T.MathUtils.lerp(a[2],b[2],t));uv.push(t,j/24)}}for(let i=0;i<12;i++)for(let j=0;j<24;j++){const n=i*25+j;if(s>0)ix.push(n,n+1,n+25,n+1,n+26,n+25);else ix.push(n,n+25,n+1,n+1,n+25,n+26)}const m=carbon.clone();m.side=T.DoubleSide;mesh('suspension',geo(vs,ix,uv),m)}
-let attach=front?-1.0:1.14,outer=z-s*w*.57;for(let y of [.25,.48]){blade([attach-.29,y,s*.21],[x,y,outer],.052);blade([attach+.26,y,s*.22],[x,y,outer],.045)}rod('suspension',[attach,.61,s*.19],[x,.23,outer],.012);rod('suspension',[attach-.18,.32,s*.24],[x-.07,.36,outer],.007,metal);mesh('suspension',new T.SphereGeometry(.024,16,12),satin,[x,.48,outer]);
+let attach=front?-1.0:1.14,outer=z-s*w*.35;for(let y of [.25,.48]){blade([attach-.29,y,s*.21],[x,y,outer],.052);blade([attach+.26,y,s*.22],[x,y,outer],.045)}rod('suspension',[attach,.61,s*.19],[x,.23,outer],.012);rod('suspension',[attach-.18,.32,s*.24],[x-.07,.36,outer],.007,metal);mesh('suspension',new T.SphereGeometry(.024,16,12),satin,[x,.48,outer]);
 }
 // Thermal and fabrication detail: exhaust, rear rain light, fasteners, body seams.
-mesh('engine',new T.CylinderGeometry(.038,.042,.23,32,true),metal,[1.95,.46,0],[0,0,Math.PI/2]);mesh('engine',new T.CircleGeometry(.033,32),dark,[2.067,.46,0],[0,Math.PI/2,0]);
+mesh('engine',new T.CylinderGeometry(.038,.042,.50,32,true),metal,[1.86,.335,0],[0,0,Math.PI/2]);mesh('engine',new T.CircleGeometry(.033,32),dark,[2.112,.335,0],[0,Math.PI/2,0]);
 const lightmat=mat('#991c0a',.1,.3);lightmat.emissive.set('#ff2305');lightmat.emissiveIntensity=.6;box('diffuser',.014,.05,.065,lightmat,[2.02,.294,0]);for(let s of [-1,1])box('rear',.025,.05,.014,lightmat,[2.34,.90,s*.758]);
 for(let s of [-1,1]){for(let i=0;i<6;i++)mesh('nose',new T.SphereGeometry(.005,6,6),metal,[-1.55+i*.15,.54,s*(.13+i*.024)]);tube('engine',[[.51,.55,s*.155],[.82,.49,s*.158],[1.08,.41,s*.128],[1.49,.34,s*.078]],.0018,satin)}
 // Sweep the inlet, duct, fillet and attached lettering in the same coordinate field.
