@@ -11,3 +11,13 @@ aside{background:#f5f6f1;border-left:1px solid var(--line);overflow:auto;scrollb
 @media(min-width:1600px){#watch-panel{padding-left:30px;padding-right:30px}}
 @media(max-width:900px){header{padding-left:22px;padding-right:22px}.brand span{display:none}.edition{gap:8px}}
 @media(max-width:720px){header{padding:0 15px}.edition{display:none}.header-actions{gap:6px}.header-watch{padding:0 11px;height:44px}.theme-toggle,.help-btn{width:44px;height:44px}#watch-panel{padding:0 23px 25px}.watch-tabs{margin-bottom:10px}.video-card{padding:14px 0}.video-copy strong{font-size:13px}.video-desc{font-size:11px}.video-play{width:36px;height:36px}}
+
+/* Independent Sketchfab showcase, preserving the anatomy renderer and its controls. */
+#realistic-view{position:absolute;inset:0;z-index:40;background:var(--paper);display:flex;flex-direction:column;min-height:0}
+.realistic-bar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 22px;border-bottom:1px solid var(--line)}
+.realistic-bar strong{display:block;font-size:16px}.realistic-bar span{display:block;margin-top:5px;color:var(--muted);font-size:11px}.realistic-bar a,.realistic-note a{color:var(--gold);text-decoration:underline}
+#sketchfab-viewer{display:block;width:100%;flex:1;min-height:0;border:0;background:#20242b}
+.realistic-note{margin:0;padding:12px 22px;font-size:11px;line-height:1.6;color:var(--muted);border-top:1px solid var(--line)}.realistic-note a{display:inline-block;margin-left:6px}
+.show-realistic>.stage-top,.show-realistic>#labels,.show-realistic>#hover-name,.show-realistic>.view-tools,.show-realistic>.car-caption,.show-realistic>.mode-dock,.show-realistic>.concept-note{visibility:hidden}
+#realistic-model[aria-pressed=true]{background:var(--gold);color:#141820}
+@media(max-width:720px){.realistic-bar{padding:12px;gap:8px}.realistic-bar strong{font-size:13px}.realistic-bar .header-watch{font-size:11px;padding:0 10px}.realistic-note{padding:10px 12px;font-size:10px}.header-actions #realistic-model{font-size:10px;padding:0 8px}.header-actions{gap:4px}.edition{display:none}}
