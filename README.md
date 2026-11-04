@@ -24,4 +24,5 @@ https://ed-unnamed.github.io/apex-f1-anatomy/
 ## Credits
 
 Three.js and its bundled modules are used under the license in vendor/THREE-LICENSE.txt.
+
 F1 Movie APX GP 07 by vecarz on Sketchfab
