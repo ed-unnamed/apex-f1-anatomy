@@ -9,6 +9,29 @@ export const videos=[
 {id:'cooling',type:'explain',title:'How an F1 engine stays cool',publisher:'Formula 1 · Tech Talk',meta:'Cooling principles · 2022 · 8:25',desc:'Albert Fabrega demonstrates engine cooling. Connect the sidepod inlets and airbox to the systems inside.',url:'https://www.formula1.com/en/video/how-to-cool-down-an-f1-engine-albert-fabregas-f1-tv-tech-talk-demo-crypto-com.1740047742098453676'},
 {id:'suspension',type:'explain',title:'Suspension, explained',publisher:'Mercedes-AMG F1',meta:'Engineering principles · Earlier generation',desc:'Geoff Willis explains how the suspension controls wheel movement and the car’s platform.',url:'https://www.mercedesamgf1.com/news/how-does-suspension-work-in-a-formula-one-car'},
 {id:'brakes',type:'explain',title:'Inside the braking system',publisher:'Mercedes-AMG F1',meta:'Engineering principles · Earlier generation',desc:'Mike Elliott walks through how a Formula 1 car’s braking systems work.',url:'https://www.mercedesamgf1.com/news/how-do-braking-systems-work-on-a-formula-one-car'},
-{id:'tyres',type:'explain',title:'Understanding F1 tyres',publisher:'Mercedes-AMG F1',meta:'Grip & compounds · Earlier generation',desc:'Loic Serra explains tyre compounds and how tyres transmit the forces acting on the car.',url:'https://www.mercedesamgf1.com/news/tyres-explained'}
+{id:'tyres',type:'explain',title:'Understanding F1 tyres',publisher:'Mercedes-AMG F1',meta:'Grip & compounds · Earlier generation',desc:'Loic Serra explains tyre compounds and how tyres transmit the forces acting on the car.',url:'https://www.mercedesamgf1.com/news/tyres-explained'},
+{id:'nose-crash',type:'explain',title:'Crash-tested nose and safety structures',publisher:'Formula 1 · Tech Talk',meta:'Nose & chassis · 2022 · 10:33',desc:'Craig Scarborough brings a crash-tested nose into the studio to explain how the car protects the driver.',url:'https://www.formula1.com/en/video/f1-tv-tech-talk-f1-car-safety-structures-explained-crypto-com.1737269531730948709'},
+{id:'halo-demo',type:'explain',title:'How the halo works',publisher:'Formula 1 · Tech Talk',meta:'Driver protection · 2022',desc:'Albert Fabrega demonstrates the halo and the other safety systems around the driver.',url:'https://www.formula1.com/en/video/how-the-halo-works-albert-fabregas-f1-tv-tech-talk-demo-crypto-com.1738069900596755397'},
+{id:'underfloor-demo',type:'explain',title:'What happens under the floor?',publisher:'Formula 1 · Tech Talk',meta:'Underfloor airflow · 2023 example · 12:03',desc:'See how the underfloor shapes airflow. This demo uses the previous generation of floor; watch the 2026 aero explainer for the flatter design.',url:'https://www.formula1.com/en/video/alberts-tech-demo-what-happens-under-the-floor-crypto-com.1781988071517825011'},
+{id:'front-haas',type:'explain',title:'A close look at Haas’s front wing',publisher:'Formula 1 · Haas F1 Team',meta:'2026 · Front wing update · 1:27',desc:'Haas head of car engineering Hoagy Nidd explains the front wing update the team brought to Suzuka.',url:'https://www.formula1.com/en/video/hoagy-nidd-explains-haas-new-front-wing-detail.1860799326629250974'},
+{id:'rear-mercedes',type:'explain',title:'Inside Mercedes’ 2026 rear wing',publisher:'Formula 1 · Tech Talk',meta:'2026 · Jumps to 10:39',desc:'Jump straight to the Mercedes rear wing chapter in Sam Collins’s pre-season technical review.',url:'https://www.youtube.com/watch?v=hs7PcFX-Tmw&t=639s'},
+{id:'diffuser-demo',type:'explain',title:'How McLaren shaped its rear diffuser',publisher:'Formula 1 · Tech Talk',meta:'Diffuser case study · 2021 example',desc:'Sam Collins explains McLaren’s unusual diffuser design. Find the clip on the article page.',url:'https://www.formula1.com/en/latest/article/mclaren-explain-thinking-behind-their-unique-diffuser-design-that-had.2lav4yQYhNwUZKdEwyHLbc'},
+{id:'steering-demo',type:'explain',title:'Inside an F1 steering wheel',publisher:'Mercedes-AMG F1',meta:'Cockpit controls · Team explainer',desc:'Mercedes walks through the controls on the wheel and what the driver uses them for.',url:'https://www.mercedesamgf1.com/news/mercedes-f1-steering-wheel-explained'},
+{id:'audi-sidepods',type:'explain',title:'Why Audi’s sidepods look different',publisher:'Formula 1 · Tech Talk',meta:'2026 · Bahrain testing',desc:'Sam Collins examines Audi’s inlet and bodywork design at pre-season testing.',url:'https://www.formula1.com/en/video/audis-surprising-new-sidepods-bahrain-testing-2026-first-look-tech-talk.1856859495611147789'},
+{id:'sauber-airbox',type:'explain',title:'Inside the airbox and airhorn',publisher:'Sauber F1 Team · Cutaway Insights',meta:'Air intake · Earlier-generation cutaway',desc:'A cutaway car shows the intake duct hidden inside the bodywork above the driver.',url:'https://www.youtube.com/watch?v=47qOX1ni1Yk'},
+{id:'power-unit',type:'explain',title:'What sits beneath the engine cover?',publisher:'Mercedes-AMG F1',meta:'Power unit · Team explainer',desc:'A walkthrough of the Mercedes power unit that shows what the outer bodywork has to package.',url:'https://www.mercedesamgf1.com/news/everything-you-need-to-know-about-the-mercedes-power-unit--f1-explained'}
 ];
-export const partVideos={front:['aero-2026'],nose:['apx-tech'],tyres:['tyres'],suspension:['suspension','brakes'],halo:['apx-tech'],cockpit:['apx-tech'],sidepods:['cooling'],airbox:['cooling'],engine:['cooling','apx-tech'],floor:['aero-2026'],diffuser:['aero-2026'],rear:['aero-2026']};
+export const partVideos={
+  front:['front-haas','aero-2026'],
+  nose:['nose-crash','apx-tech'],
+  tyres:['tyres'],
+  suspension:['suspension','brakes'],
+  halo:['halo-demo'],
+  cockpit:['steering-demo','apx-tech'],
+  sidepods:['audi-sidepods','cooling'],
+  airbox:['sauber-airbox','apx-tech'],
+  engine:['power-unit','apx-tech'],
+  floor:['underfloor-demo','aero-2026'],
+  diffuser:['diffuser-demo','aero-2026'],
+  rear:['rear-mercedes','aero-2026']
+};

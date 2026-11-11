@@ -4,8 +4,8 @@ import {DecalGeometry} from './vendor/DecalGeometry.js';
 export function buildCar(){
 const car=new T.Group(),groups={},pickables=[],activeFlaps=[];
 const mat=(color,metalness=0,roughness=.4)=>new T.MeshPhysicalMaterial({color,metalness,roughness});
-const paint=mat('#090b10',.28,.31);paint.clearcoat=.78;paint.clearcoatRoughness=.23;
-const gold=mat('#c1a16c',.76,.28);gold.clearcoat=.8;gold.clearcoatRoughness=.23;
+const paint=mat('#090b10',.12,.42);paint.clearcoat=.45;paint.clearcoatRoughness=.34;
+const gold=mat('#bda477',.68,.35);gold.clearcoat=.8;gold.clearcoatRoughness=.23;
 const satin=mat('#252a28',.78,.39),metal=mat('#909794',.95,.25),dark=mat('#090d0b',.0,.72),rubber=mat('#191c1b',.02,.82),red=mat('#a93220',.5,.33),ivory=mat('#deded0',.3,.37);
 function canvasTexture(w,h,draw){const c=document.createElement('canvas');c.width=w;c.height=h;draw(c.getContext('2d'));const t=new T.CanvasTexture(c);t.colorSpace=T.SRGBColorSpace;t.anisotropy=8;return t}
 const weave=canvasTexture(256,256,c=>{c.fillStyle='#343936';c.fillRect(0,0,256,256);for(let y=0;y<64;y++)for(let x=0;x<64;x++){const bright=((x+y)%4<2);c.fillStyle=bright?'#535a55':'#272d2a';c.fillRect(x*4,y*4,bright?3:4,bright?4:3)}});weave.wrapS=weave.wrapT=T.RepeatWrapping;weave.repeat.set(10,6);const carbon=mat('#444b4c',.48,.42);carbon.map=weave;carbon.clearcoat=.45;carbon.clearcoatRoughness=.3;
@@ -101,7 +101,7 @@ for(let side of [-1,1])topMark(frontMain,textTexture('Expensify','#f4f3eb'),-2.6
 for(let k=0;k<2;k++){let x=-2.54+k*.16,y=.207+k*.055;let f=wing('front',x,y,1.79-k*.06,.235,k===0?paint:carbon,.15,.032);const pivot=addFlap(f,[x,y,0],-.27);if(k===1)for(const side of [-1,1]){const label=topMark(f,textTexture('SharkNINJA','#f6f3e9'),x+.16,side*.53,.07,.43,'front-SharkNINJA');pivot.attach(label)}}
 for(let s of [-1,1]){let end=sheet('front',[[-2.70,.12],[-2.39,.12],[-2.10,.23],[-2.05,.51],[-2.20,.49],[-2.43,.31],[-2.70,.21]],.012,carbon);end.position.z=s*.93;wing('front',-2.64,.12,.23,.46,carbon,.02,0).position.z=s*.825;tube('front',[[-2.64,.274,s*.93],[-2.46,.29,s*.93],[-2.19,.413,s*.93]],.004,gold);for(let z of [.31,.60])rod('front',[-2.64,.2,z*s],[-2.20,.35,z*s],.0045,metal);decal(end,'IWC',[-2.25,.345,s*.946],[.27,.10,.055],[0,s===1?0:Math.PI,0],'#f2f0e7');}
 // High, open sidepod mouths above pronounced undercuts and long descending flanks.
-const podSections=[[-.438,.663,.563,.277,.655],[-.29,.666,.340,.285,.659],[-.13,.668,.250,.28,.665],[.18,.637,.220,.255,.691],[.54,.577,.174,.22,.674],[.98,.466,.155,.16,.548],[1.38,.315,.154,.10,.328],[1.64,.217,.151,.08,.182]];
+const podSections=[[-.438,.663,.563,.277,.655],[-.29,.666,.340,.285,.659],[-.13,.668,.250,.28,.665],[.18,.580,.220,.255,.691],[.54,.510,.174,.22,.674],[.98,.405,.155,.16,.548],[1.38,.315,.154,.10,.328],[1.64,.217,.151,.08,.182]];
 for(let s of [-1,1]){
 const inletProfile=[[.285,.636],[.445,.663],[.632,.641],[.655,.594],[.61,.568],[.48,.563],[.30,.574],[.277,.600]];
 const podProfile=([x,t,b,inn,out])=>{const body=[[inn,t-.012],[(inn+out)*.5,t+.004],[out-.04,t-.009],[out,t-.055],[out-.102,b+(t-b)*.42],[Math.max(inn+.025,out-.135),b+.028],[inn+.02,b],[inn,t-.12]];const u=T.MathUtils.clamp((x+.438)/.308,0,1),blend=u*u*(3-2*u);return body.map((p,i)=>p.map((v,k)=>T.MathUtils.lerp(inletProfile[i][k],v,blend)))};
@@ -135,13 +135,14 @@ const gv=[],gi=[],gu=[],GL=84,GC=24;for(let i=0;i<=GL;i++){const[x,height,inner,
 // Low tapered engine cover shares its front boundary and normals with the chassis.
 const spineSections=[[.60,1.036,.795],[.80,1.02,.815],[1.04,.945,.675],[1.29,.855,.535],[1.52,.790,.425],[1.76,.755,.345],[1.86,.754,.320]];
 for(const side of [-1,1]){const v=[],uv=[],black=[],cap=[],L=112,W=24;for(let i=0;i<=L;i++){const[x,top,bottom]=interp(spineSections,i/L);for(let j=0;j<=W;j++){const t=j/W;v.push(x,T.MathUtils.lerp(bottom,top,t),side*(.005+.007*Math.sin(t*Math.PI)));uv.push(x/1.12,.5+t*.3)}}for(let i=0;i<L;i++)for(let j=0;j<W;j++){const a=i*(W+1)+j,b=a+1,c=a+W+1,d=c+1,ix=j>=W-4?cap:black;if(side>0)ix.push(a,c,b,b,c,d);else ix.push(a,b,c,b,d,c)}mesh('engine',geo(v,black,uv),paint).name='sculpted-engine-spine';mesh('engine',geo(v,cap,uv),gold).name='gold-spine-edge';}
-for(let i=0;i<2;i++){const side=i===0?-1:1,cover=bodyRear[i];surfaceText(cover,'SharkNINJA',.87,.730,.45,.094,side);surfaceText(cover,'AMG',1.07,.555,.41,.080,side);}
+for(let i=0;i<2;i++){const side=i===0?-1:1,cover=bodyRear[i];surfaceText(cover,'SharkNINJA',.87,.730,.45,.094,side);surfaceText(cover,'AMG',1.04,.635,.34,.060,side);}
 for(let i=0;i<2;i++){const side=i===0?-1:1;surfaceText(bodyFront[i],'HAYES',.16,.685,.18,.035,side,'#eeeae1');surfaceText(bodyFront[i],'TOMMY HILFIGER',-.82,.515,.30,.075,side);surfaceText(bodyRear[i],'MSC',1.28,.405,.25,.067,side);}
-for(const cover of bodyRear){const g=cover.geometry,p=g.attributes.position,idx=g.index.array,chosen=[];for(let k=0;k<idx.length;k+=3){const ids=[idx[k],idx[k+1],idx[k+2]],x=ids.reduce((a,i)=>a+p.getX(i),0)/3,y=ids.reduce((a,i)=>a+p.getY(i),0)/3,z=ids.reduce((a,i)=>a+Math.abs(p.getZ(i)),0)/3;if(x>.72&&x<1.74&&z<.067&&y>.40)chosen.push(...ids)}const patch=g.clone();patch.setIndex(chosen);const material=gold.clone();material.polygonOffset=true;material.polygonOffsetFactor=-1;const accent=mesh('engine',patch,material);accent.name='flush-engine-gold-accent';}
 // Rounded trapezoid inlet, thin gold leading edge and recessed duct. No closed bulb.
 const airOutline=[[-.104,.946],[-.122,.953],[-.122,1.017],[-.111,1.10],[-.079,1.137],[-.04,1.146],[.04,1.146],[.079,1.137],[.111,1.10],[.122,1.017],[.122,.953],[.104,.946]];
 intake('airbox',airOutline,.349,.405,.012,gold);
-const intakeFairing=loft('airbox',[[.405,1.046,.126,.098],[.57,1.025,.126,.098],[.78,.987,.115,.084],[.98,.906,.083,.062],[1.12,.792,.047,.041],[1.26,.705,.020,.025]],gold,0,.72);
+const intakeFairing=loft('airbox',[[.405,1.046,.126,.098],[.57,1.025,.126,.098],[.78,.987,.115,.084],[.98,.906,.083,.062],[1.12,.792,.047,.041],[1.26,.705,.020,.025]],paint,0,.72);
+// Split the roof at shared vertices: no intersecting gold shell or jagged projected stripe.
+const roofGeometry=intakeFairing.geometry,roofIndices=[],sideIndices=[],ring=64;for(let i=0;i<roofGeometry.index.count;i+=6){const ids=Array.from(roofGeometry.index.array.slice(i,i+6)),j=ids[0]%(ring+1);(j>=8&&j<24?roofIndices:sideIndices).push(...ids)}const roof=roofGeometry.clone();roof.setIndex(roofIndices);roofGeometry.setIndex(sideIndices);mesh('airbox',roof,gold).name='smooth-gold-airbox-roof';
 
 // Mask only the cavity's back: the forward section remains genuinely open.
 const innerOutline=airOutline.map(([z,y])=>[z*.89,1.047+(y-1.047)*.87]);intake('airbox',innerOutline,.365,.402,.004,carbon);
